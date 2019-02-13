@@ -1,0 +1,27 @@
+goos: linux
+goarch: amd64
+BenchmarkMain-4                	       1	3058911063 ns/op	30842176 B/op	     828 allocs/op
+BenchmarkRenderRow-4           	       1	10143245552 ns/op	18874368 B/op	       1 allocs/op
+BenchmarkRenderRowParallel-4   	       1	2278659919 ns/op	18935168 B/op	     160 allocs/op
+BenchmarkCastRay-4             	2000000000	         0.01 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	_/home/alex/projects/RayTracingGO	16.227s
+
+goos: linux
+goarch: amd64
+BenchmarkMain-4                	       1	2919843612 ns/op	30842208 B/op	     830 allocs/op
+BenchmarkRenderRow-4           	       1	10180071593 ns/op	18874368 B/op	       1 allocs/op
+BenchmarkRenderRowParallel-4   	     100	  22768907 ns/op	  188949 B/op	       0 allocs/op
+BenchmarkCastRay-4             	2000000000	         0.01 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	_/home/alex/projects/RayTracingGO	19.010s
+
+goos: linux
+goarch: amd64
+BenchmarkMain-4                	       1	7186407851 ns/op	3476298120 B/op	107667463 allocs/op
+BenchmarkRenderRow-4           	       1	22729823910 ns/op	4291891072 B/op	133531720 allocs/op
+BenchmarkRenderRowParallel-4   	       3	 888377519 ns/op	449136506 B/op	13835849 allocs/op
+BenchmarkCastRay-4             	       1	33818522711 ns/op	10093701872 B/op	314830785 allocs/op
+PASS
+ok  	_/home/alex/projects/RayTracingGO	67.328s
+

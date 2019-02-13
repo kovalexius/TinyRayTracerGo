@@ -15,10 +15,10 @@ func NewSphere(center Vec3f, radius float64, material Material) Sphere {
 	return sphere
 }
 
-func (sphere Sphere) RayIntersect (orig Vec3f, dir Vec3f) (result bool, t0 float64) {
+func (sphere Sphere) RayIntersect (orig *Vec3f, dir *Vec3f) (result bool, t0 float64) {
 	t0 = 0.0
 	result = false
-	var L Vec3f = sphere.Center.Sub(orig)
+	var L *Vec3f = sphere.Center.Sub(orig)
 	var tca float64 = L.ScalarMul(dir)
 	var d2 float64 = L.ScalarMul(L) - tca*tca
 	if d2 > sphere.Radius * sphere.Radius {

@@ -30,7 +30,7 @@ func NewMaterial(args ...interface{}) (mat Material) {
 	if !ok {
 		panic("Second argument must be Vec4f")
 	}
-	diffuse, ok := args[2].(Vec3f)
+	diffuse, ok := args[2].(*Vec3f)
 	if !ok {
 		panic("Third argument must be Vec3f")
 	}
@@ -42,7 +42,7 @@ func NewMaterial(args ...interface{}) (mat Material) {
 	material := Material {
 		Refractive_index: refractive,
 		Albedo: albedo,
-		Diffuse_color: diffuse,
+		Diffuse_color: *diffuse,
 		Specular_exponent: specular,
 	}
 	
