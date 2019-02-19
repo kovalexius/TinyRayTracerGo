@@ -28,9 +28,8 @@ type Vec3f struct {
 	Data_ [3]float64
 }
 
-func NewVec3f(x float64, y float64, z float64) *Vec3f {
-	result := Vec3f{[3]float64{x, y, z}}
-	return &result
+func NewVec3f(x float64, y float64, z float64) Vec3f {
+	return Vec3f{[3]float64{x, y, z}}
 }
 
 func (vec Vec3f) GetComponent(index int) float64 {
@@ -40,23 +39,28 @@ func (vec Vec3f) GetComponent(index int) float64 {
 	panic("Vec3f size exceeded")
 }
 
-func (vec *Vec3f) Sub(other *Vec3f) *Vec3f {
-	result :=  new(Vec3f)
-	for i := 0; i < 3; i++ {
-		result.Data_[i] = vec.Data_[i] - other.Data_[i]
+func (vec Vec3f) Sub(other *Vec3f) Vec3f {
+	result :=  Vec3f {
+						[3]float64{
+							vec.Data_[0] - other.Data_[0],
+							vec.Data_[1] - other.Data_[1],
+							vec.Data_[2] - other.Data_[2],
+						},
 	}
 	return result
 }
 
-func (vec *Vec3f) Add(other *Vec3f) *Vec3f {
-	result := new(Vec3f)
-	for i := 0; i < 3; i++ {
-		result.Data_[i] = vec.Data_[i] + other.Data_[i]
+func (vec Vec3f) Add(other *Vec3f) Vec3f {
+	return Vec3f { 
+					[3]float64 {
+						vec.Data_[0] + other.Data_[0],
+						vec.Data_[1] + other.Data_[1],
+						vec.Data_[2] + other.Data_[2],
+					},
 	}
-	return result
 }
 
-func (vec *Vec3f) ScalarMul(other *Vec3f) float64 {
+func (vec Vec3f) ScalarMul(other *Vec3f) float64 {
 	result := 0.0
 	for i := 0; i < 3; i++ {
 		result += vec.Data_[i] * other.Data_[i]
@@ -64,14 +68,17 @@ func (vec *Vec3f) ScalarMul(other *Vec3f) float64 {
 	return result
 }
 
-func (vec *Vec3f) Scaling(rhs float64) *Vec3f {
-	var ret = new(Vec3f)
-	for i := 0; i < 3; i++ {
-		ret.Data_[i] = vec.Data_[i]*rhs
+func (vec Vec3f) Scaling(rhs float64) Vec3f {
+	return Vec3f {
+					[3]float64 {
+						vec.Data_[0]*rhs,
+						vec.Data_[1]*rhs,
+						vec.Data_[2]*rhs,
+					},
 	}
-	return ret
 }
 
+/*
 func (vec *Vec3f) Norm() float64 {
 	var sqrSum float64 = 0.0
 	for i := 0; i < 3; i++ {
@@ -79,17 +86,37 @@ func (vec *Vec3f) Norm() float64 {
 	}
 	return math.Sqrt(sqrSum)
 }
+*/
 
-func (vec *Vec3f) Normalize(l ...float64) *Vec3f {
+func (vec Vec3f) Norm() float64 {
+	var sqrSum float64 = 0.0
+	for i := 0; i < 3; i++ {
+		sqrSum += vec.Data_[i] * vec.Data_[i]
+	}
+	return math.Sqrt(sqrSum)
+}
+
+/*
+func (vec *Vec3f) Normalize(l ...float64) Vec3f {
 	L := 1.0
 	if len(l) > 0 {
 		L = l[0]
 	}
-	result := vec.Scaling(L / vec.Norm())
-	return result
+	*vec = vec.Scaling(L / vec.Norm())
+	return *vec
+}
+*/
+
+func (vec Vec3f) Normalize(l ...float64) Vec3f {
+	L := 1.0
+	if len(l) > 0 {
+		L = l[0]
+	}
+
+	return vec.Scaling(L / vec.Norm())
 }
 
-func (vec *Vec3f) negative() *Vec3f {
+func (vec Vec3f) negative() Vec3f {
 	return vec.Scaling(-1.0)
 }
 
