@@ -25,3 +25,19 @@ BenchmarkCastRay-4             	       1	33818522711 ns/op	10093701872 B/op	3148
 PASS
 ok  	_/home/alex/projects/RayTracingGO	67.328s
 
+goos: linux
+goarch: amd64
+BenchmarkMain-4                	       1	20750809109 ns/op	9617952768 B/op	295722935 allocs/op
+BenchmarkRenderRow-4           	       1	6585504823 ns/op	1001045920 B/op	30104573 allocs/op
+BenchmarkRenderRowParallel-4   	     100	  19158183 ns/op	 9972069 B/op	  299829 allocs/op
+BenchmarkCastRay-4             	       1	6569799168 ns/op	1096414432 B/op	33084733 allocs/op
+PASS
+ok  	_/home/alex/projects/GoLang/RayTracingGO	40.034s
+goos: linux
+goarch: amd64
+BenchmarkMain-4                	       1	32239571206 ns/op	9593154208 B/op	295727436 allocs/op
+BenchmarkRenderRow-4           	       1	7227707041 ns/op	975880096 B/op	30104573 allocs/op
+BenchmarkRenderRowParallel-4   	       5	 545643585 ns/op	178113862 B/op	 5487327 allocs/op
+BenchmarkCastRay-4             	       1	9737373287 ns/op	1830325632 B/op	56805994 allocs/op
+PASS
+ok  	_/home/alex/projects/GoLang/RayTracingGO	52.716s

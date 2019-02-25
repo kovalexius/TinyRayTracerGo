@@ -15,21 +15,21 @@ func BenchmarkRenderRow(b *testing.B) {
 	const width int = 1024
 	const height int = 768
 	const fov float64 = math.Pi/3.0;
-	framebuffer := make([][]Vec3f, width)
+	framebuffer := make([][]*Vec3f, width)
 	for i := 0; i < height; i++ {
-		framebuffer[i] = make([]Vec3f, width)
+		framebuffer[i] = make([]*Vec3f, width)
 	}
 	
-	raybuffer := make([][]Vec3f, width)
+	raybuffer := make([][]*Vec3f, width)
 	for i:= 0; i < height; i++ {
-		raybuffer[i] = make([]Vec3f, width)
+		raybuffer[i] = make([]*Vec3f, width)
 	}
 	for row := 0; row < height; row++ {
 		for col := 0; col < width; col++ {
 			var dir_x float64 =  (float64(col) + 0.5) - float64(width)/2.0;
 			var dir_y float64 = -(float64(row) + 0.5) + float64(height)/2.0;    // this flips the image at the same time
 			var dir_z float64 = -float64(height)/(2.0*math.Tan(fov/2.0));
-			raybuffer[row][col] = *NewVec3f(dir_x, dir_y, dir_z).Normalize()
+			raybuffer[row][col] = NewVec3f(dir_x, dir_y, dir_z).Normalize()
 		}
 	}
 	
@@ -52,7 +52,7 @@ func BenchmarkRenderRow(b *testing.B) {
 	}
 	
 	for j := 0; j < height; j++ {
-		renderRow(j, width, height, fov, raybuffer, &spheres, &lights, framebuffer, nil)
+		renderRow(j, width, height, fov, &raybuffer, &spheres, &lights, &framebuffer, nil)
 	}
 }
 
@@ -60,21 +60,21 @@ func BenchmarkRenderRowParallel(b *testing.B) {
 	const width int = 1024
 	const height int = 768
 	const fov float64 = math.Pi/3.0;
-	framebuffer := make([][]Vec3f, width)
+	framebuffer := make([][]*Vec3f, width)
 	for i := 0; i < height; i++ {
-		framebuffer[i] = make([]Vec3f, width)
+		framebuffer[i] = make([]*Vec3f, width)
 	}
 	
-	raybuffer := make([][]Vec3f, width)
+	raybuffer := make([][]*Vec3f, width)
 	for i:= 0; i < height; i++ {
-		raybuffer[i] = make([]Vec3f, width)
+		raybuffer[i] = make([]*Vec3f, width)
 	}
 	for row := 0; row < height; row++ {
 		for col := 0; col < width; col++ {
 			var dir_x float64 =  (float64(col) + 0.5) - float64(width)/2.0;
 			var dir_y float64 = -(float64(row) + 0.5) + float64(height)/2.0;    // this flips the image at the same time
 			var dir_z float64 = -float64(height)/(2.0*math.Tan(fov/2.0));
-			raybuffer[row][col] = *NewVec3f(dir_x, dir_y, dir_z).Normalize()
+			raybuffer[row][col] = NewVec3f(dir_x, dir_y, dir_z).Normalize()
 		}
 	}
 	
@@ -97,7 +97,7 @@ func BenchmarkRenderRowParallel(b *testing.B) {
 	}
 	
 	for j := 0; j < height; j++ {
-		go renderRow(j, height, width, fov, raybuffer, &spheres, &lights, framebuffer, nil)
+		go renderRow(j, width, height, fov, &raybuffer, &spheres, &lights, &framebuffer, nil)
 	}
 }
 
@@ -108,13 +108,13 @@ func BenchmarkCastRay(b *testing.B) {
 	
 	var row int = height/2
 	var col int = width/2
-	framebuffer := make([][]Vec3f, width)
+	framebuffer := make([][]*Vec3f, width)
 	for i := 0; i < height; i++ {
-		framebuffer[i] = make([]Vec3f, width)
+		framebuffer[i] = make([]*Vec3f, width)
 	}
-	raybuffer := make([][]Vec3f, width)
+	raybuffer := make([][]*Vec3f, width)
 	for i:= 0; i < height; i++ {
-		raybuffer[i] = make([]Vec3f, width)
+		raybuffer[i] = make([]*Vec3f, width)
 	}
 	
 	ivory := NewMaterial(1.0, NewVec4f(0.6,  0.3, 0.1, 0.0), NewVec3f(0.4, 0.4, 0.3), 50.0)
@@ -139,19 +139,18 @@ func BenchmarkCastRay(b *testing.B) {
 	_ = lights
 	
 	orig := NewVec3f(0.0, 0.0 ,0.0 )
-
 	for row = 0; row < height; row++ {
 		for col = 0; col < width; col++ {
 			var dir_x float64 =  (float64(col) + 0.5) - float64(width)/2.0;
 			var dir_y float64 = -(float64(row) + 0.5) + float64(height)/2.0;    // this flips the image at the same time
 			var dir_z float64 = -float64(height)/(2.0*math.Tan(fov/2.0));
-			raybuffer[row][col] = *NewVec3f(dir_x, dir_y, dir_z).Normalize()
+			raybuffer[row][col] = NewVec3f(dir_x, dir_y, dir_z).Normalize()
 		}
 	}
 	
 	for row = 0; row < height; row++ {
 		for col = 0; col < width; col++ {
-			framebuffer[row][col] = *CastRay(orig, &raybuffer[row][col], &spheres, &lights);
+			framebuffer[row][col] = CastRay(orig, raybuffer[row][col], &spheres, &lights);
 		}
 	}
 	_ = framebuffer

@@ -14,22 +14,28 @@ func renderRow(row int,
 			   width int,
 			   height int,
 			   fov float64,
-			   raybuffer [][]Vec3f,
+			   raybuffer *[][]*Vec3f,
 			   spheres *[]*Sphere,
 			   lights *[]*Light, 
-			   framebuffer [][]Vec3f,
+			   framebuffer *[][]*Vec3f,
 			   wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
 	orig := NewVec3f(0.0, 0.0 ,0.0 )
 	for col := 0; col < width; col++ {
-		framebuffer[row][col] = *CastRay(orig, &raybuffer[row][col], spheres, lights);
+		(*framebuffer)[row][col] = CastRay(orig, (*raybuffer)[row][col], spheres, lights);
 	}
 }
 
 
-func render(spheres *[]*Sphere, lights *[]*Light, width int, height int, fov float64, framebuffer [][]Vec3f, raybuffer [][]Vec3f, filename string) {
+func render(spheres *[]*Sphere, 
+			lights *[]*Light, 
+			width int, height int, 
+			fov float64, 
+			framebuffer *[][]*Vec3f, 
+			raybuffer *[][]*Vec3f, 
+			filename string) {
 	var wg sync.WaitGroup
 	for j := 0; j < height; j++ {				// actual rendering loop
 		wg.Add(1)
@@ -48,10 +54,10 @@ func render(spheres *[]*Sphere, lights *[]*Light, width int, height int, fov flo
 	buf := []byte{}
 	for row := 0; row < height; row++ {
 		for col := 0; col < width; col++ {
-			c := framebuffer[row][col]
+			c := (*framebuffer)[row][col]
 			var max float64 = math.Max(c.Data_[0], math.Max(c.Data_[1], c.Data_[2]))
 			if max>1 {
-				c = *c.Scaling(1.0/max);
+				c = c.Scaling(1.0/max);
 			}
 			for j := 0; j<3; j++ {
 				var fComponent float64 = 255 * math.Max(0.0, math.Min(1.0, c.GetComponent(j)))
@@ -69,20 +75,20 @@ func main() {
 	const width int = 1024
 	const height int = 768
 	const fov float64 = math.Pi/3.0;
-	framebuffer := make([][]Vec3f, width)
+	framebuffer := make([][]*Vec3f, width)
 	for i := 0; i < height; i++ {
-		framebuffer[i] = make([]Vec3f, width)
+		framebuffer[i] = make([]*Vec3f, width)
 	}
-	raybuffer := make([][]Vec3f, width)
+	raybuffer := make([][]*Vec3f, width)
 	for i:= 0; i < height; i++ {
-		raybuffer[i] = make([]Vec3f, width)
+		raybuffer[i] = make([]*Vec3f, width)
 	}
 	for row := 0; row < height; row++ {
 		for col := 0; col < width; col++ {
 			var dir_x float64 =  (float64(col) + 0.5) - float64(width)/2.0;
 			var dir_y float64 = -(float64(row) + 0.5) + float64(height)/2.0;    // this flips the image at the same time
 			var dir_z float64 = -float64(height)/(2.0*math.Tan(fov/2.0));
-			raybuffer[row][col] = *NewVec3f(dir_x, dir_y, dir_z).Normalize()
+			raybuffer[row][col] = NewVec3f(dir_x, dir_y, dir_z).Normalize()
 		}
 	}
 	
@@ -108,6 +114,6 @@ func main() {
 	for i := 0; i < 10; i++ {
 		filename := name + strconv.Itoa(i) + ".ppm"
 		spheres[3].Center_.Data_[0] -= 0.2
-		render(&spheres, &lights, width, height, fov, framebuffer, raybuffer, filename)
+		render(&spheres, &lights, width, height, fov, &framebuffer, &raybuffer, filename)
 	}
 }
