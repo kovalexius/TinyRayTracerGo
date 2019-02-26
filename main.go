@@ -5,50 +5,22 @@ import (
 	"fmt"
 	"os"
 	"math"
+	"sync"
 )
 
 
-/*
-func render() {
-	const width int = 1024
-	const height int = 768
-	
-	var framebuffer [width*height] Vec3f
-
-	for j := 0; j < height; j++ {
-		for i := 0; i < width; i++ {
-			framebuffer[i+j*width] = Vec3f{[3]float64{float64(j)/float64(height), float64(i)/float64(width), 0.0}}
-		}
-	}
-	
-	file , err := os.Create("./out.ppm")
-	if err != nil {
-		fmt.Println("Unable to create file:", err)
-		os.Exit(1)
-	}
-	defer file.Close()
-	
-	fmt.Fprintf(file, "P6\n%d %d \n255\n", width, height)
-	buf := []byte{}
-	for i := 0; i < height*width; i++ {
-		for j := 0; j < 3; j++ {
-			
-			var fComponent float64 = 255 * math.Max(0.0, math.Min(1.0, framebuffer[i].GetComponent(j)))
-			var component byte = byte(fComponent)
-			buf = append(buf, component)
-		}
-	}
-	file.Write(buf)
-}
-*/
-
-func renderRow(row int, 
-			   height int, 
+func renderRow(row int,
 			   width int,
+			   height int, 
 			   fov float64,
 			   spheres []Sphere,
 			   lights []Light, 
-			   framebuffer []Vec3f) {
+			   framebuffer []Vec3f,
+			   wg *sync.WaitGroup) {
+	if wg != nil {
+		defer wg.Done()
+	}
+	
 	for i := 0; i < width; i++ {
 		var dir_x float64 =  (float64(i) + 0.5) - float64(width)/2.0;
         var dir_y float64 = -(float64(row) + 0.5) + float64(height)/2.0;    // this flips the image at the same time
@@ -63,11 +35,14 @@ func render(spheres []Sphere, lights []Light) {
 	const height int = 768
 	const fov float64 = math.Pi/3.0;
 	var framebuffer [width*height] Vec3f
-	//framebuffer
+	
+	var wg sync.WaitGroup
 
 	for j := 0; j < height; j++ {				// actual rendering loop
-		go renderRow(j, height, width, fov, spheres, lights, framebuffer[:])
+		wg.Add(1)
+		go renderRow(j, width, height, fov, spheres, lights, framebuffer[:], &wg)
 	}
+	wg.Wait();
 	
 	file , err := os.Create("./outGoLang.ppm")
 	if err != nil {
@@ -114,5 +89,7 @@ func main() {
 			NewLight(NewVec3f( 30, 20,  30), 1.7),
 	}
 	
-	render(spheres, lights)
+	for i := 0; i < 10; i++ {
+		render(spheres, lights)
+	}
 }
