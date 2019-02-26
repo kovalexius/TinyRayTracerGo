@@ -80,12 +80,16 @@ func (vec *Vec3f) Norm() float64 {
 }
 
 
-func (vec *Vec3f) Normalize(l ...float64) *Vec3f {
-	L := 1.0
-	if len(l) > 0 {
-		L = l[0]
-	}
-	return vec.Scaling(L / vec.Norm())
+//func (vec *Vec3f) Normalize(l ...float64) *Vec3f {
+//	L := 1.0
+//	if len(l) > 0 {
+//		L = l[0]
+//	}
+//	return vec.Scaling(L / vec.Norm())
+//}
+
+func (vec *Vec3f) Normalize() *Vec3f {
+	return vec.Scaling(1.0 / vec.Norm())
 }
 
 func (vec *Vec3f) negative() *Vec3f {

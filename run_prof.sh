@@ -1,1 +1,1 @@
-go tool pprof -svg RayTracingGO.test cpu.out > cpu.svg
+go tool pprof -svg RayTracingGO_ImprovePerfomance.test cpu.out > cpu.svg

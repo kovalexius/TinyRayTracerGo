@@ -1,2 +1,2 @@
 #go test -bench=. -benchmem -gcflags -m
-go test -bench=. -benchmem -cpuprofile cpu.out
+go test -bench=BenchmarkMain -benchmem -cpuprofile cpu.out

@@ -12,11 +12,12 @@ func Reflect(I *Vec3f, N *Vec3f) *Vec3f {
 }
 
 
-func Refract(I *Vec3f, N *Vec3f, eta_t float64, eta_i ...float64) *Vec3f {			 // Snell's law
-	Eta_i := 1.0
+func Refract(I *Vec3f, N *Vec3f, eta_t float64, Eta_i float64) *Vec3f {			 // Snell's law
+	
+	/*Eta_i := 1.0
 	if len(eta_i) > 0 {
 		Eta_i = eta_i[0]
-	}
+	}*/
 	var cosi float64 = -math.Max(-1.0, math.Min(1.0, I.ScalarMul(N)))
 	if cosi < 0 {
 		return Refract(I, N.negative(), Eta_i, eta_t)			// if the ray comes from the inside the object, swap the air and the media
@@ -81,14 +82,17 @@ func CastRay (orig *Vec3f,
 	}
 	
 	var point, N Vec3f
-    material := NewMaterial()
-	ok := SceneIntersect(orig, dir, spheres, &point, &N, material)
+    //material := NewMaterial()
+	material := Material{Refractive_index:1.0, 
+			Albedo: NewVec4f(1.0, 0.0, 0.0, 0.0), 
+			Diffuse_color: &Vec3f{},}
+	ok := SceneIntersect(orig, dir, spheres, &point, &N, &material)
 	if (Depth>4) || !ok {
 		return NewVec3f(0.2, 0.7, 0.8) 			// background color
 	}
 	
 	reflect_dir := Reflect(dir, &N).Normalize()
-	refract_dir := Refract(dir, &N, material.Refractive_index).Normalize()
+	refract_dir := Refract(dir, &N, material.Refractive_index, 1.0).Normalize()
 	
 	var reflect_orig *Vec3f						// offset the original point to avoid occlusion by the object itself
 	vecN := N.Scaling(1e-3)
